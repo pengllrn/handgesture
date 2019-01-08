@@ -57,4 +57,8 @@ public class DisplayResult extends Activity {
     public void exitbutton1(View v){
         this.finish();
     }
+
+    public void exitbutton0(View v){
+        finish();
+    }
 }

@@ -26,6 +26,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -183,8 +184,13 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         iv_thumb.setOnClickListener(v -> {
             File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/temp.jpg");
             Intent it = new Intent(Intent.ACTION_VIEW);
-            Uri mUri = Uri.parse("file://" + file.getPath());
-            it.setDataAndType(mUri, "image/*");
+            Uri photoOutputUri = FileProvider.getUriForFile(
+                    CameraActivity.this,
+                    getPackageName() + ".fileprovider",
+                    file);
+//            Uri mUri = Uri.parse("file://" + file.getPath());
+            it.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //给Uri授予临时权限
+            it.setDataAndType(photoOutputUri, "image/*");
             startActivity(it);
         });
 
@@ -236,7 +242,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 Bitmap bitmapForPredict = scaleImage(bitmap, 64, 64);
 
                 //把图片保存到本地图库
-                //MediaStore.Images.Media.insertImage(getContentResolver(), bitmapForPredit, "title", "description");
+//                MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", "description");
 
                 //加载模型
                 classifier = new Classifier(getAssets(), MODEL_FILE);
@@ -288,7 +294,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
             //拍照
             CaptureRequest mCaptureBuilder = captureRequestBuilder.build();
-            mCameraCaptureSession.setRepeatingRequest(mCaptureBuilder, null, childHandler);
+            mCameraCaptureSession.capture(mCaptureBuilder, null, childHandler);
 
         } catch (CameraAccessException e) {
             e.printStackTrace();

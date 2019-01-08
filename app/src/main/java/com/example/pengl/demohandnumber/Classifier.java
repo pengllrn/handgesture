@@ -29,7 +29,7 @@ public class Classifier {
 
     static {
         //加载libtensorflow_inference.so库文件
-        System.load("tensorflow_inference");
+        System.loadLibrary("tensorflow_inference");
         Log.e("tf","libtensorflow_inference.so库加载成功");
     }
 
@@ -81,7 +81,7 @@ public class Classifier {
         for(int i=0;i<x.length;i++) x[i]/=sum;
     }
 
-    public ArrayList predict(Bitmap bitmap){
+    public ArrayList<String> predict(Bitmap bitmap){
 
         float[] inputdata = getPixels(bitmap);
         for(int i=0;i<30;++i)
@@ -105,7 +105,7 @@ public class Classifier {
     }
 
     @SuppressLint("NewApi")
-    private ArrayList getShowList(int label,float[] prob){
+    private ArrayList<String> getShowList(int label,float[] prob){
         ArrayList<String> list = new ArrayList<>();
         DecimalFormat df = new DecimalFormat("0.000");
         float label_prob=prob[label];
